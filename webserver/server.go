@@ -7,6 +7,7 @@ import (
 	"github.com/defintly/backend/webserver/collections"
 	"github.com/defintly/backend/webserver/concepts"
 	"github.com/defintly/backend/webserver/criteria"
+	"github.com/defintly/backend/webserver/handler"
 	"github.com/gin-gonic/gin"
 	"github.com/toorop/gin-logrus"
 	"net/http"
@@ -33,7 +34,7 @@ func initCategoryRoutes(router *gin.Engine) {
 
 	categoryGroup.GET("", categories.GetAll())
 
-	categoryIdGroup := categoryGroup.Group("/:id")
+	categoryIdGroup := categoryGroup.Group("/:id", handler.Id())
 	categoryIdGroup.GET("", categories.GetById())
 }
 
@@ -42,7 +43,7 @@ func initCollectionRoutes(router *gin.Engine) {
 
 	collectionGroup.GET("", collections.GetAll())
 
-	collectionIdGroup := collectionGroup.Group("/:id")
+	collectionIdGroup := collectionGroup.Group("/:id", handler.Id())
 	collectionIdGroup.GET("", collections.GetById())
 }
 
@@ -51,7 +52,7 @@ func initConceptRoutes(router *gin.Engine) {
 
 	conceptGroup.GET("", concepts.GetAll())
 
-	conceptIdGroup := conceptGroup.Group("/:id")
+	conceptIdGroup := conceptGroup.Group("/:id", handler.Id())
 	conceptIdGroup.GET("", concepts.GetById())
 }
 
@@ -60,6 +61,6 @@ func initCriteriaRoutes(router *gin.Engine) {
 
 	criteriaGroup.GET("", criteria.GetAll())
 
-	criteriaIdGroup := criteriaGroup.Group("/:id")
+	criteriaIdGroup := criteriaGroup.Group("/:id", handler.Id())
 	criteriaIdGroup.GET("", criteria.GetById())
 }
