@@ -28,7 +28,7 @@ var cli struct {
 func main() {
 	kongCtx := kong.Parse(&cli)
 
-	database.OpenConnection(cli.DatabaseName, cli.DatabasePort, cli.DatabaseUser, cli.DatabasePassword, cli.DatabaseName,
+	database.OpenConnection(cli.DatabaseHostname, cli.DatabasePort, cli.DatabaseUser, cli.DatabasePassword, cli.DatabaseName,
 		cli.DatabaseSSLMode)
 
 	switch kongCtx.Command() {
