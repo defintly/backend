@@ -1,14 +1,14 @@
 package importer
 
 import (
+	"github.com/defintly/backend/database"
 	"github.com/xuri/excelize/v2"
 	"regexp"
 	"strconv"
 	"strings"
 )
 
-func ImportFromExcel(databaseUrl string, databasePort int, databaseUsername string, databasePassword string,
-	excelFileName string) {
+func ImportFromExcel(excelFileName string) {
 	excel, err := excelize.OpenFile(excelFileName)
 	if err != nil {
 		panic(err)
@@ -147,7 +147,7 @@ func ImportFromExcel(databaseUrl string, databasePort int, databaseUsername stri
 		// generate DDL
 		createQuery := "CREATE TABLE IF NOT EXISTS " + tableName + "("
 		for _, rowName := range filteredImportColumns {
-			createQuery += rowName[0]
+			createQuery += "\"" + rowName[0] + "\""
 			if strings.HasSuffix(rowName[0], "id") {
 				if rowName[0] == "id" {
 					createQuery += " SERIAL PRIMARY KEY, "
@@ -182,6 +182,7 @@ func ImportFromExcel(databaseUrl string, databasePort int, databaseUsername stri
 		}
 		insertQuery = strings.TrimSuffix(insertQuery, ", ")
 
-		// TODO execute queries in database
+		database.MustExec(createQuery)
+		database.MustExec(insertQuery)
 	}
 }
