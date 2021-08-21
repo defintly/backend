@@ -28,7 +28,7 @@ func ImportFromExcel(databaseUrl string, databasePort int, databaseUsername stri
 			panic(err)
 		}
 
-		var trimedUnfilteredImportColumns [][]string
+		var trimmedUnfilteredImportColumns [][]string
 
 		emptyRows := 0
 
@@ -47,7 +47,7 @@ func ImportFromExcel(databaseUrl string, databasePort int, databaseUsername stri
 					}
 
 					if strings.TrimSpace(unfilteredImportColumns[j][0]) != "" {
-						trimedUnfilteredImportColumns = append(trimedUnfilteredImportColumns, tempCol)
+						trimmedUnfilteredImportColumns = append(trimmedUnfilteredImportColumns, tempCol)
 					}
 				}
 
@@ -57,29 +57,29 @@ func ImportFromExcel(databaseUrl string, databasePort int, databaseUsername stri
 
 		// if there are not enough empty rows, use the old table
 		if emptyRows <= 10 {
-			trimedUnfilteredImportColumns = unfilteredImportColumns
+			trimmedUnfilteredImportColumns = unfilteredImportColumns
 		}
 
 		var filteredImportColumns [][]string
 
 		// give every row an id for relation
 		idColumn := []string{"id"}
-		for i := 1; i <= len(trimedUnfilteredImportColumns[0])-1; i++ {
+		for i := 1; i <= len(trimmedUnfilteredImportColumns[0])-1; i++ {
 			intAsString := strconv.Itoa(i)
 			idColumn = append(idColumn, intAsString)
 
 			// map relational relevant data for later
 			if sheetName == "Categories" {
-				categoriesIndex[trimedUnfilteredImportColumns[1][i]] = intAsString
+				categoriesIndex[trimmedUnfilteredImportColumns[1][i]] = intAsString
 			} else if sheetName == "Collections" {
-				collectionsIndex[trimedUnfilteredImportColumns[1][i]] = intAsString
+				collectionsIndex[trimmedUnfilteredImportColumns[1][i]] = intAsString
 			}
 		}
 		filteredImportColumns = append(filteredImportColumns, idColumn)
 
 		var tempRelationalArray []string
 
-		for _, row := range trimedUnfilteredImportColumns {
+		for _, row := range trimmedUnfilteredImportColumns {
 			// filter redundant data
 			if row[0] == "AGISI" || row[0] == "Contact" || row[0] == "Twitter" || row[0] == "Logo" ||
 				row[0] == "Banner" || row[0] == "Related work" || row[0] == "AGISI more" || row[0] == "Cite App" ||
