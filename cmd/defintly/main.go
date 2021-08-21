@@ -11,7 +11,7 @@ var cli struct {
 	DatabaseHostname string `help:"hostname of PostgreSQL instance" default:"127.0.0.1"`
 	DatabasePort     int    `help:"port of the PostgreSQL instance" default:"5432"`
 	DatabaseUser     string `help:"user of the PostgreSQL instance" default:"defintly"`
-	DatabasePassword string `help:"password of the PostgreSQL instance password" required:""`
+	DatabasePassword string `help:"password of the PostgreSQL instance" required:""`
 	DatabaseName     string `help:"name of the PostgreSQL instance database" default:"defintly"`
 	DatabaseSSLMode  string `help:"enable/disable SSL connection to the PostgreSQL instance (see PostgreSQL documentation of specific values to enable)" default:"disable"`
 
