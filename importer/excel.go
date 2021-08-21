@@ -1,6 +1,7 @@
 package importer
 
 import (
+	"fmt"
 	"github.com/defintly/backend/database"
 	"github.com/xuri/excelize/v2"
 	"regexp"
@@ -23,6 +24,8 @@ func ImportFromExcel(excelFileName string) {
 	collectionsIndex := map[string]string{}
 
 	for _, sheetName := range []string{"Categories", "Criteria", "Collections", "Concepts"} {
+		fmt.Printf("processing %s...\n", sheetName)
+
 		unfilteredImportColumns, err := excel.GetCols(sheetName)
 		if err != nil {
 			panic(err)
@@ -169,6 +172,8 @@ func ImportFromExcel(excelFileName string) {
 
 				data = strings.ReplaceAll(data, `
 `, "\\n")
+				// escape simple quotes
+				data = strings.ReplaceAll(data, "'", "''")
 
 				_, err := strconv.Atoi(data)
 				if err == nil {
@@ -180,7 +185,7 @@ func ImportFromExcel(excelFileName string) {
 			}
 			insertQuery = strings.TrimSuffix(insertQuery, ", ") + "), "
 		}
-		insertQuery = strings.TrimSuffix(insertQuery, ", ")
+		insertQuery = strings.TrimSuffix(insertQuery, ", ") + " ON CONFLICT DO NOTHING"
 
 		database.MustExec(createQuery)
 		database.MustExec(insertQuery)
