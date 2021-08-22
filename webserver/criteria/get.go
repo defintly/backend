@@ -18,7 +18,7 @@ func GetAll() gin.HandlerFunc {
 			return
 		}
 
-		ctx.JSON(http.StatusOK, gin.H{"concepts": criteriaList})
+		ctx.JSON(http.StatusOK, gin.H{"criteria": criteriaList})
 	}
 }
 
