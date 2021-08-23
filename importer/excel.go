@@ -86,7 +86,8 @@ func ImportFromExcel(excelFileName string) {
 			// filter redundant data
 			if row[0] == "AGISI" || row[0] == "Contact" || row[0] == "Twitter" || row[0] == "Logo" ||
 				row[0] == "Banner" || row[0] == "Related work" || row[0] == "AGISI more" || row[0] == "Cite App" ||
-				strings.TrimSpace(row[0]) == "" {
+				row[0] == "Quality criteria in this category" ||
+				row[0] == "Other quality criteria in the same category" || strings.TrimSpace(row[0]) == "" {
 				continue
 			}
 
