@@ -18,7 +18,7 @@ func Run(hostname string, port int) {
 	router.Use(ginlogrus.Logger(general.Log), gin.Recovery())
 
 	router.GET("/", func(ctx *gin.Context) {
-		ctx.JSON(http.StatusOK, gin.H{"name": "defintly API", "version": "2.0.0"})
+		ctx.JSON(http.StatusOK, gin.H{"name": "defintly API", "version": "2.0.1"})
 	})
 
 	initCategoryRoutes(router)
