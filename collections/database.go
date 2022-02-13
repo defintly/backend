@@ -31,3 +31,14 @@ func GetCollectionById(id int) (*types.Collection, error) {
 
 	return collections[0], err
 }
+
+func Search(search string) ([]*types.Collection, error) {
+	slice, err := database.QueryAsync(database.DefaultTimeout, types.CriteriaType,
+		"SELECT * FROM collections WHERE collection LIKE $1", search+"%")
+
+	if err != nil {
+		return nil, err
+	}
+
+	return slice.([]*types.Collection), nil
+}

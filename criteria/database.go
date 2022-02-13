@@ -31,3 +31,14 @@ func GetCriteriaById(id int) (*types.Criteria, error) {
 
 	return criteria[0], err
 }
+
+func Search(search string) ([]*types.Criteria, error) {
+	slice, err := database.QueryAsync(database.DefaultTimeout, types.CriteriaType,
+		"SELECT * FROM criteria WHERE quality_criterion LIKE $1", search+"%")
+
+	if err != nil {
+		return nil, err
+	}
+
+	return slice.([]*types.Criteria), nil
+}

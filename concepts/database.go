@@ -32,10 +32,27 @@ func GetConceptById(id int) (*types.Concept, error) {
 	return concepts[0], err
 }
 
-func AddComment(conceptId int, userId int, text string, parentCommentId *int) error {
-	return database.PrepareAsync(database.DefaultTimeout,
-		"INSERT INTO concept_comments(concept_id, user_id, text, parent_id, reviewed) VALUES($1, $2, $3, $4, $5)",
+func Search(search string) ([]*types.Concept, error) {
+	slice, err := database.QueryAsync(database.DefaultTimeout, types.CriteriaType,
+		"SELECT * FROM concepts WHERE concept LIKE $1", search+"%")
+
+	if err != nil {
+		return nil, err
+	}
+
+	return slice.([]*types.Concept), nil
+}
+
+func AddComment(conceptId int, userId int, text string, parentCommentId *int) (int, error) {
+	slice, err := database.QueryAsync(database.DefaultTimeout, types.IdInformationType,
+		"INSERT INTO concept_comments(concept_id, user_id, text, parent_id, reviewed) VALUES($1, $2, $3, $4, $5) RETURNING id",
 		conceptId, userId, text, parentCommentId, false)
+
+	if err != nil {
+		return -1, err
+	}
+
+	return slice.([]*types.IdInformation)[0].Id, nil
 }
 
 func DeleteComment(commentId int) error {
