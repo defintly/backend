@@ -16,7 +16,7 @@ func GetPermissionsOfRole(roleId int) ([]*types.RolePermission, error) {
 	return slice.([]*types.RolePermission), err
 }
 
-func HasUserPermission(userId int, permission string) (bool, error) {
+func HasPermission(userId int, permission string) (bool, error) {
 	slice, err := database.QueryAsync(database.DefaultTimeout, types.IdInformationType,
 		"SELECT user_role_mapping.user_id "+
 			"FROM user_role_mapping "+
