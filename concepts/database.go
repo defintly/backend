@@ -48,8 +48,8 @@ func Search(search string) ([]*types.Concept, error) {
 
 func AddComment(conceptId int, userId int, text string, parentCommentId *int) (int, error) {
 	slice, err := database.QueryAsync(database.DefaultTimeout, types.IdInformationType,
-		"INSERT INTO concept_comments(concept_id, user_id, text, parent_id, reviewed) VALUES($1, $2, $3, $4, $5) RETURNING id",
-		conceptId, userId, text, parentCommentId, false)
+		"INSERT INTO concept_comments(concept_id, user_id, text, parent_id, allowed) VALUES($1, $2, $3, $4, $5) "+
+			"RETURNING id", conceptId, userId, text, parentCommentId, false)
 
 	if err != nil {
 		return -1, err
@@ -74,11 +74,84 @@ func GetCreatorUserIdOfComment(commentId int) (int, error) {
 	return userIds[0].Id, nil
 }
 
+func ListUnreviewedComments() ([]*types.Comment, error) {
+	slice, err := database.QueryAsync(database.DefaultTimeout, types.CommentType,
+		"SELECT * FROM concept_comments WHERE allowed = 0")
+
+	if err != nil {
+		return nil, err
+	}
+
+	return slice.([]*types.Comment), nil
+}
+
 func DeleteComment(commentId int) error {
 	return database.PrepareAsync(database.DefaultTimeout, "DELETE FROM concept_comments WHERE id = $1", commentId)
 }
 
 func AllowComment(commentId int) error {
-	return database.PrepareAsync(database.DefaultTimeout, "UPDATE concept_comments SET allowed = 1 WHERE id = $1",
-		commentId)
+	slice, err := database.QueryAsync(database.DefaultTimeout, types.IdInformationType,
+		"UPDATE concept_comments SET allowed = 1 WHERE id = $1 RETURNING id", commentId)
+
+	if err != nil {
+		return err
+	}
+
+	if len(slice.([]*types.IdInformation)) == 0 {
+		return CommentNotFound
+	}
+
+	return nil
+}
+
+func GetComment(commentId int) (*types.Comment, error) {
+	slice, err := database.QueryAsync(database.DefaultTimeout, types.CommentType,
+		"SELECT * FROM concept_comments WHERE id = $1", commentId)
+
+	if err != nil {
+		return nil, err
+	}
+
+	comments := slice.([]*types.Comment)
+
+	if len(comments) == 0 {
+		return nil, CommentNotFound
+	}
+
+	return comments[0], nil
+}
+
+func GetParentComments(id int) ([]*types.Comment, error) {
+	slice, err := database.QueryAsync(database.DefaultTimeout, types.CommentType,
+		"SELECT * FROM concept_comments WHERE concept_id = $1 AND parent_comment_id = NULL", id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return slice.([]*types.Comment), nil
+}
+
+// GetCommentTree only allows a depth of one child - more children can be received by
+// querying each child (and child of a child, ...)
+func GetCommentTree(commentId int) (*types.CommentTree, error) {
+	comment, err := GetComment(commentId)
+	if err != nil {
+		return nil, err
+	}
+
+	tree := &types.CommentTree{
+		Comment:  comment,
+		Children: nil,
+	}
+
+	slice, err := database.QueryAsync(database.DefaultTimeout, types.CommentType,
+		"SELECT * FROM concept_comments WHERE parent_comment_id = $1", comment.Id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	tree.Children = slice.([]*types.Comment)
+	return tree, nil
 }
