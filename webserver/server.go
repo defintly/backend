@@ -60,6 +60,7 @@ func initConceptRoutes(router *gin.Engine, authHandler gin.HandlerFunc) {
 
 	conceptIdGroup := conceptGroup.Group("/:id", handler.Id())
 	conceptIdGroup.GET("", concepts.GetById())
+	conceptIdGroup.GET("/export", concepts.GenerateHTML())
 	conceptIdGroup.GET("/comments", concepts.GetComments())
 	conceptIdGroup.POST("/comments", authHandler, concepts.AddComment())
 
@@ -79,6 +80,7 @@ func initCriteriaRoutes(router *gin.Engine) {
 
 	criteriaIdGroup := criteriaGroup.Group("/:id", handler.Id())
 	criteriaIdGroup.GET("", criteria.GetById())
+	criteriaIdGroup.GET("/export", criteria.GenerateHTML())
 }
 
 func initAuthRoutes(router *gin.Engine, authHandler gin.HandlerFunc) {
