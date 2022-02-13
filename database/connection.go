@@ -69,6 +69,34 @@ func Query(structType reflect.Type, query string, values ...interface{}) *QueryR
 		results := reflect.MakeSlice(reflect.SliceOf(structType), 0, 0).Interface().([]*types.Concept)
 		err := connection.Select(&results, query, values...)
 		return &QueryResult{results, err}
+	case "*types.User":
+		results := reflect.MakeSlice(reflect.SliceOf(structType), 0, 0).Interface().([]*types.User)
+		err := connection.Select(&results, query, values...)
+		return &QueryResult{results, err}
+	case "*types.AuthenticationInformation":
+		results := reflect.MakeSlice(reflect.SliceOf(structType), 0, 0).Interface().([]*types.AuthenticationInformation)
+		err := connection.Select(&results, query, values...)
+		return &QueryResult{results, err}
+	case "*types.PasswordHashInformation":
+		results := reflect.MakeSlice(reflect.SliceOf(structType), 0, 0).Interface().([]*types.PasswordHashInformation)
+		err := connection.Select(&results, query, values...)
+		return &QueryResult{results, err}
+	case "*types.UsernameInformation":
+		results := reflect.MakeSlice(reflect.SliceOf(structType), 0, 0).Interface().([]*types.UsernameInformation)
+		err := connection.Select(&results, query, values...)
+		return &QueryResult{results, err}
+	case "*types.MailInformation":
+		results := reflect.MakeSlice(reflect.SliceOf(structType), 0, 0).Interface().([]*types.MailInformation)
+		err := connection.Select(&results, query, values...)
+		return &QueryResult{results, err}
+	case "*types.Role":
+		results := reflect.MakeSlice(reflect.SliceOf(structType), 0, 0).Interface().([]*types.Role)
+		err := connection.Select(&results, query, values...)
+		return &QueryResult{results, err}
+	case "*types.RolePermission":
+		results := reflect.MakeSlice(reflect.SliceOf(structType), 0, 0).Interface().([]*types.RolePermission)
+		err := connection.Select(&results, query, values...)
+		return &QueryResult{results, err}
 	default:
 		return &QueryResult{nil, NoMatchingStruct}
 	}
