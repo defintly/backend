@@ -1,6 +1,7 @@
 package criteria
 
 import (
+	"github.com/defintly/backend/categories"
 	"github.com/defintly/backend/concepts"
 	"github.com/defintly/backend/criteria"
 	"github.com/defintly/backend/general"
@@ -8,6 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gomarkdown/markdown"
 	"net/http"
+	"strings"
 )
 
 func GenerateHTML() gin.HandlerFunc {
@@ -25,8 +27,28 @@ func GenerateHTML() gin.HandlerFunc {
 			return
 		}
 
-		ctx.Data(http.StatusOK, "application/html", markdown.ToHTML([]byte(
-			selectedCriteria.QualityCriterion+"\n"+selectedCriteria.DescriptionLong+"\n"+selectedCriteria.Example),
-			nil, nil))
+		category, err := categories.GetCategoryById(selectedCriteria.CategoryId)
+		if err != nil {
+			ctx.AbortWithStatusJSON(http.StatusInternalServerError, errors.InternalError)
+			general.Log.Error("Failed to get selectedCriteria's category for export: ", err)
+			return
+		}
+
+		returnData := []byte("<html><head><title>" + selectedCriteria.QualityCriterion + "</title></head><body>")
+		returnData = append(returnData,
+			markdown.ToHTML([]byte(
+				"# "+selectedCriteria.QualityCriterion+
+					"\n\n"+
+					"**Category:** "+category.Category+
+					"\n\n"+
+					strings.ReplaceAll(selectedCriteria.DescriptionLong, "\\n", "\\\n")+
+					"\n\n"+
+					strings.ReplaceAll(selectedCriteria.Example, "\\n", "\\\n")+
+					"\n\n"+
+					strings.ReplaceAll(selectedCriteria.References, "\\n", "\\\n"),
+			), nil, nil)...)
+		returnData = append(returnData, []byte("</body></html>")...)
+
+		ctx.Data(http.StatusOK, "text/html; charset=UTF-8", returnData)
 	}
 }

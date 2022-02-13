@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gomarkdown/markdown"
 	"net/http"
+	"strings"
 )
 
 func GenerateHTML() gin.HandlerFunc {
@@ -24,7 +25,19 @@ func GenerateHTML() gin.HandlerFunc {
 			return
 		}
 
-		ctx.Data(http.StatusOK, "application/html",
-			markdown.ToHTML([]byte(concept.Definition+"\n"+concept.Source), nil, nil))
+		// TODO add "how to cite"?
+		returnData := []byte("<html><head><title>" + concept.Concept + "</title></head><body>")
+		returnData = append(returnData,
+			markdown.ToHTML([]byte(
+				"# "+concept.Concept+
+					"\n\n"+
+					strings.ReplaceAll(concept.Definition, "\\n", "\\\n")+
+					"\n\n"+
+					strings.ReplaceAll(concept.Source, "\\n", "\\\n"),
+			), nil, nil)...)
+		returnData = append(returnData, []byte("</body></html>")...)
+
+		ctx.Data(http.StatusOK, "text/html; charset=UTF-8", returnData)
+
 	}
 }
