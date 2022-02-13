@@ -39,6 +39,7 @@ func initCategoryRoutes(router *gin.Engine) {
 	categoryGroup := router.Group("/categories")
 
 	categoryGroup.GET("", categories.GetAll())
+	categoryGroup.GET("/search", categories.Search())
 
 	categoryIdGroup := categoryGroup.Group("/:id", handler.Id())
 	categoryIdGroup.GET("", categories.GetById())
@@ -48,6 +49,7 @@ func initCollectionRoutes(router *gin.Engine) {
 	collectionGroup := router.Group("/collections")
 
 	collectionGroup.GET("", collections.GetAll())
+	collectionGroup.GET("/search", collections.Search())
 
 	collectionIdGroup := collectionGroup.Group("/:id", handler.Id())
 	collectionIdGroup.GET("", collections.GetById())
@@ -57,6 +59,7 @@ func initConceptRoutes(router *gin.Engine, authHandler gin.HandlerFunc) {
 	conceptGroup := router.Group("/concepts")
 
 	conceptGroup.GET("", concepts.GetAll())
+	conceptGroup.GET("/search", concepts.Search())
 
 	conceptIdGroup := conceptGroup.Group("/:id", handler.Id())
 	conceptIdGroup.GET("", concepts.GetById())
@@ -77,6 +80,7 @@ func initCriteriaRoutes(router *gin.Engine) {
 	criteriaGroup := router.Group("/criteria")
 
 	criteriaGroup.GET("", criteria.GetAll())
+	criteriaGroup.GET("/search", criteria.Search())
 
 	criteriaIdGroup := criteriaGroup.Group("/:id", handler.Id())
 	criteriaIdGroup.GET("", criteria.GetById())
