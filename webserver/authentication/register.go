@@ -37,7 +37,7 @@ func Register() gin.HandlerFunc {
 		}
 
 		authInfo, err := users.Register(registrationData.Username, registrationData.Mail, registrationData.Password,
-			registrationData.FirstName, registrationData.LastName)
+			registrationData.FirstName, registrationData.LastName, ctx.GetHeader("User-Agent"))
 		if err != nil {
 			if err == users.UserAlreadyExists {
 				ctx.AbortWithStatusJSON(http.StatusBadRequest, errors.UserAlreadyExists)
