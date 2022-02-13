@@ -37,7 +37,7 @@ func GetUserByAuthenticationKey(key string) (*types.User, error) {
 	return users[0], err
 }
 
-func Login(nameOrMail string, password string) (*types.AuthenticationInformation, error) {
+func Login(nameOrMail string, password string, userAgent string) (*types.AuthenticationInformation, error) {
 	ok, nameOrMail := general.IsNameValid(nameOrMail, false)
 	if !ok {
 		return nil, InvalidMailAddressOrUsername
@@ -61,9 +61,9 @@ func Login(nameOrMail string, password string) (*types.AuthenticationInformation
 		"SELECT users.id, users.username, session.session_key "+
 			"FROM "+
 			"users, "+
-			"(INSERT INTO user_sessions VALUES ($1, $2) RETURNING user_id, session_key) session "+
+			"(INSERT INTO user_sessions VALUES ($1, $2, $3, NOW()) RETURNING user_id, session_key) session "+
 			"WHERE users.id = session.user_id",
-		sessionKey, nameOrMail, nameOrMail)
+		sessionKey, nameOrMail, userAgent)
 	if err != nil {
 		return nil, err
 	}
@@ -77,7 +77,7 @@ func Login(nameOrMail string, password string) (*types.AuthenticationInformation
 }
 
 func Register(name string, mailAddress string, password string, firstName *string,
-	lastName *string) (*types.AuthenticationInformation, error) {
+	lastName *string, userAgent string) (*types.AuthenticationInformation, error) {
 	ok, mailAddress := general.IsEmailValid(mailAddress)
 	if !ok {
 		return nil, InvalidMailAddressOrUsername
@@ -110,7 +110,7 @@ func Register(name string, mailAddress string, password string, firstName *strin
 		return nil, err
 	}
 
-	return Login(mailAddress, password)
+	return Login(mailAddress, password, userAgent)
 }
 
 func getNewSessionKey() (string, error) {

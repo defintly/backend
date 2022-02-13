@@ -35,7 +35,7 @@ func Login() gin.HandlerFunc {
 			return
 		}
 
-		authInfo, err := users.Login(loginData.UsernameOrMail, loginData.Password)
+		authInfo, err := users.Login(loginData.UsernameOrMail, loginData.Password, ctx.GetHeader("User-Agent"))
 		if err != nil {
 			if err == users.UserNotFound || err == users.IncorrectPassword {
 				ctx.AbortWithStatusJSON(http.StatusBadRequest, errors.InvalidLoginData)
