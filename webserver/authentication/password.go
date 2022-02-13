@@ -2,6 +2,7 @@ package authentication
 
 import (
 	"encoding/json"
+	"github.com/defintly/backend/general"
 	"github.com/defintly/backend/types"
 	"github.com/defintly/backend/users"
 	"github.com/defintly/backend/webserver/errors"
@@ -41,6 +42,7 @@ func ChangePassword() gin.HandlerFunc {
 								ctx.AbortWithStatusJSON(http.StatusForbidden, errors.InvalidLoginData)
 							} else {
 								ctx.AbortWithStatusJSON(http.StatusInternalServerError, errors.InternalError)
+								general.Log.Error("Failed to change password: ", err)
 							}
 							return
 						}
