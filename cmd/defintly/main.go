@@ -31,6 +31,8 @@ func main() {
 	database.OpenConnection(cli.DatabaseHostname, cli.DatabasePort, cli.DatabaseUser, cli.DatabasePassword, cli.DatabaseName,
 		cli.DatabaseSSLMode)
 
+	initDDL()
+
 	switch kongCtx.Command() {
 	case "serve":
 		webserver.Run(cli.Serve.WebserverHostname, cli.Serve.WebserverPort)
@@ -41,4 +43,42 @@ func main() {
 	default:
 		panic(kongCtx.PrintUsage(true))
 	}
+}
+
+func initDDL() {
+	database.MustExec("CREATE TABLE IF NOT EXISTS concept_comments(" +
+		"id BIGSERIAL PRIMARY KEY," +
+		"concept_id BIGINT NOT NULL," +
+		"user_id BIGINT NOT NULL," +
+		"text TEXT NOT NULL," +
+		"parent_id BIGINT," +
+		"allowed BOOLEAN NOT NULL" +
+		")")
+	database.MustExec("CREATE TABLE IF NOT EXISTS users(" +
+		"id BIGSERIAL PRIMARY KEY," +
+		"username TEXT NOT NULL," +
+		"mail TEXT NOT NULL," +
+		"first_name TEXT," +
+		"last_name TEXT" +
+		"password TEXT NOT NULL" +
+		")")
+	database.MustExec("CREATE TABLE IF NOT EXISTS user_sessions(" +
+		"id BIGSERIAL PRIMARY KEY," +
+		"session_key VARCHAR(36) NOT NULL" +
+		"user_agent TEXT NOT NULL," +
+		"creation_date DATE NOT NULL" +
+		")")
+	database.MustExec("CREATE TABLE IF NOT EXISTS roles(" +
+		"id BIGSERIAL PRIMARY KEY," +
+		"name TEXT NOT NULL," +
+		"description TEXT" +
+		")")
+	database.MustExec("CREATE TABLE IF NOT EXISTS role_permissions(" +
+		"role_id BIGINT NOT NULL," +
+		"name TEXT NOT NULL" +
+		")")
+	database.MustExec("CREATE TABLE IF NOT EXISTS user_role_mapping(" +
+		"user_id BIGINT NOT NULL," +
+		"role_id BIGINT NOT NULL" +
+		")")
 }
