@@ -1,0 +1,5 @@
+package permissions
+
+const (
+	All = "*"
+)
