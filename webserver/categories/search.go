@@ -10,8 +10,8 @@ import (
 
 func Search() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		searchString, ok := ctx.MustGet("query").(string)
-		if !ok {
+		searchString, ok := ctx.GetQuery("query")
+		if !ok || len(searchString) == 0 {
 			ctx.AbortWithStatusJSON(http.StatusBadRequest, errors.InvalidRequest)
 			return
 		}
