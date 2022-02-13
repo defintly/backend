@@ -33,7 +33,7 @@ func GetCategoryById(id int) (*types.Category, error) {
 }
 
 func Search(search string) ([]*types.Category, error) {
-	slice, err := database.QueryAsync(database.DefaultTimeout, types.CriteriaType,
+	slice, err := database.QueryAsync(database.DefaultTimeout, types.CategoryType,
 		"SELECT * FROM categories WHERE category LIKE $1", search+"%")
 
 	if err != nil {

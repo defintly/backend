@@ -33,7 +33,7 @@ func GetCollectionById(id int) (*types.Collection, error) {
 }
 
 func Search(search string) ([]*types.Collection, error) {
-	slice, err := database.QueryAsync(database.DefaultTimeout, types.CriteriaType,
+	slice, err := database.QueryAsync(database.DefaultTimeout, types.CollectionType,
 		"SELECT * FROM collections WHERE collection LIKE $1", search+"%")
 
 	if err != nil {

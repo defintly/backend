@@ -36,7 +36,7 @@ func GetConceptById(id int) (*types.Concept, error) {
 }
 
 func Search(search string) ([]*types.Concept, error) {
-	slice, err := database.QueryAsync(database.DefaultTimeout, types.CriteriaType,
+	slice, err := database.QueryAsync(database.DefaultTimeout, types.ConceptType,
 		"SELECT * FROM concepts WHERE concept LIKE $1", search+"%")
 
 	if err != nil {
