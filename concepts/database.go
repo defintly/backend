@@ -6,7 +6,10 @@ import (
 	"github.com/defintly/backend/types"
 )
 
-var NotFound = errors.New("concept not found")
+var (
+	NotFound        = errors.New("concept not found")
+	CommentNotFound = errors.New("comment not found")
+)
 
 func GetAllConcepts() ([]*types.Concept, error) {
 	slice, err := database.QueryAsync(database.DefaultTimeout, types.ConceptType, "SELECT * FROM concepts")
@@ -53,6 +56,22 @@ func AddComment(conceptId int, userId int, text string, parentCommentId *int) (i
 	}
 
 	return slice.([]*types.IdInformation)[0].Id, nil
+}
+
+func GetCreatorUserIdOfComment(commentId int) (int, error) {
+	slice, err := database.QueryAsync(database.DefaultTimeout, types.IdInformationType,
+		"SELECT user_id FROM concept_comments WHERE id = $1", commentId)
+
+	if err != nil {
+		return -1, err
+	}
+
+	userIds := slice.([]*types.IdInformation)
+	if len(userIds) == 0 {
+		return -1, CommentNotFound
+	}
+
+	return userIds[0].Id, nil
 }
 
 func DeleteComment(commentId int) error {
