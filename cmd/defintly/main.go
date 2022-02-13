@@ -59,12 +59,12 @@ func initDDL() {
 		"username TEXT NOT NULL," +
 		"mail TEXT NOT NULL," +
 		"first_name TEXT," +
-		"last_name TEXT" +
+		"last_name TEXT," +
 		"password TEXT NOT NULL" +
 		")")
 	database.MustExec("CREATE TABLE IF NOT EXISTS user_sessions(" +
 		"id BIGSERIAL PRIMARY KEY," +
-		"session_key VARCHAR(36) NOT NULL" +
+		"session_key VARCHAR(36) NOT NULL," +
 		"user_agent TEXT NOT NULL," +
 		"creation_date DATE NOT NULL" +
 		")")
