@@ -60,7 +60,7 @@ func AddComment(conceptId int, userId int, text string, parentCommentId *int) (i
 
 func GetCreatorUserIdOfComment(commentId int) (int, error) {
 	slice, err := database.QueryAsync(database.DefaultTimeout, types.IdInformationType,
-		"SELECT user_id FROM concept_comments WHERE id = $1", commentId)
+		"SELECT user_id AS id FROM (SELECT user_id FROM concept_comments WHERE id = $1) users", commentId)
 
 	if err != nil {
 		return -1, err
@@ -76,7 +76,7 @@ func GetCreatorUserIdOfComment(commentId int) (int, error) {
 
 func ListUnreviewedComments() ([]*types.Comment, error) {
 	slice, err := database.QueryAsync(database.DefaultTimeout, types.CommentType,
-		"SELECT * FROM concept_comments WHERE allowed = 0")
+		"SELECT * FROM concept_comments WHERE allowed = false")
 
 	if err != nil {
 		return nil, err
@@ -91,7 +91,7 @@ func DeleteComment(commentId int) error {
 
 func AllowComment(commentId int) error {
 	slice, err := database.QueryAsync(database.DefaultTimeout, types.IdInformationType,
-		"UPDATE concept_comments SET allowed = 1 WHERE id = $1 RETURNING id", commentId)
+		"UPDATE concept_comments SET allowed = true WHERE id = $1 RETURNING id", commentId)
 
 	if err != nil {
 		return err
@@ -123,7 +123,7 @@ func GetComment(commentId int) (*types.Comment, error) {
 
 func GetParentComments(id int) ([]*types.Comment, error) {
 	slice, err := database.QueryAsync(database.DefaultTimeout, types.CommentType,
-		"SELECT * FROM concept_comments WHERE concept_id = $1 AND parent_comment_id = NULL", id)
+		"SELECT * FROM concept_comments WHERE concept_id = $1 AND parent_id IS NULL", id)
 
 	if err != nil {
 		return nil, err
@@ -146,7 +146,7 @@ func GetCommentTree(commentId int) (*types.CommentTree, error) {
 	}
 
 	slice, err := database.QueryAsync(database.DefaultTimeout, types.CommentType,
-		"SELECT * FROM concept_comments WHERE parent_comment_id = $1", comment.Id)
+		"SELECT * FROM concept_comments WHERE parent_id = $1", comment.Id)
 
 	if err != nil {
 		return nil, err
