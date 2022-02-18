@@ -19,7 +19,7 @@ func GetPermissionsOfRole(roleId int) ([]*types.RolePermission, error) {
 
 func HasPermission(userId int, permission string) (bool, error) {
 	slice, err := database.QueryAsync(database.DefaultTimeout, types.IdInformationType,
-		"SELECT user_role_mapping.user_id "+
+		"SELECT user_role_mapping.user_id AS id "+
 			"FROM user_role_mapping "+
 			"INNER JOIN roles ON user_role_mapping.role_id = roles.id "+
 			"INNER JOIN role_permissions ON role_permissions.role_id = roles.id "+
