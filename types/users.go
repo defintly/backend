@@ -3,14 +3,12 @@ package types
 import "reflect"
 
 var (
-	AuthInformationType          = reflect.TypeOf(&AuthenticationInformation{})
-	UserType                     = reflect.TypeOf(&User{})
-	PwHashInformationType        = reflect.TypeOf(&PasswordHashInformation{})
-	UsernameType                 = reflect.TypeOf(&UsernameInformation{})
-	MailInformationType          = reflect.TypeOf(&MailInformation{})
-	RoleType                     = reflect.TypeOf(&Role{})
-	RolePermissionType           = reflect.TypeOf(&RolePermission{})
-	RoleIncludingPermissionsType = reflect.TypeOf(&RoleIncludingPermissions{})
+	UserType                 = reflect.TypeOf(&User{})
+	UsernameType             = reflect.TypeOf(&UsernameInformation{})
+	MailInformationType      = reflect.TypeOf(&MailInformation{})
+	RoleType                 = reflect.TypeOf(&Role{})
+	RolePermissionType       = reflect.TypeOf(&RolePermission{})
+	UserLoginInformationType = reflect.TypeOf(&UserLoginInformation{})
 )
 
 type User struct {
@@ -27,7 +25,9 @@ type AuthenticationInformation struct {
 	SessionKey string `json:"session_key" db:"session_key"`
 }
 
-type PasswordHashInformation struct {
+type UserLoginInformation struct {
+	Id           int    `db:"id"`
+	Username     string `db:"username"`
 	PasswordHash string `db:"password"`
 }
 

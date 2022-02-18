@@ -73,12 +73,8 @@ func Query(structType reflect.Type, query string, values ...interface{}) *QueryR
 		results := reflect.MakeSlice(reflect.SliceOf(structType), 0, 0).Interface().([]*types.User)
 		err := connection.Select(&results, query, values...)
 		return &QueryResult{results, err}
-	case "*types.AuthenticationInformation":
-		results := reflect.MakeSlice(reflect.SliceOf(structType), 0, 0).Interface().([]*types.AuthenticationInformation)
-		err := connection.Select(&results, query, values...)
-		return &QueryResult{results, err}
-	case "*types.PasswordHashInformation":
-		results := reflect.MakeSlice(reflect.SliceOf(structType), 0, 0).Interface().([]*types.PasswordHashInformation)
+	case "*types.UserLoginInformation":
+		results := reflect.MakeSlice(reflect.SliceOf(structType), 0, 0).Interface().([]*types.UserLoginInformation)
 		err := connection.Select(&results, query, values...)
 		return &QueryResult{results, err}
 	case "*types.UsernameInformation":
@@ -95,6 +91,10 @@ func Query(structType reflect.Type, query string, values ...interface{}) *QueryR
 		return &QueryResult{results, err}
 	case "*types.RolePermission":
 		results := reflect.MakeSlice(reflect.SliceOf(structType), 0, 0).Interface().([]*types.RolePermission)
+		err := connection.Select(&results, query, values...)
+		return &QueryResult{results, err}
+	case "*types.IdInformation":
+		results := reflect.MakeSlice(reflect.SliceOf(structType), 0, 0).Interface().([]*types.IdInformation)
 		err := connection.Select(&results, query, values...)
 		return &QueryResult{results, err}
 	default:

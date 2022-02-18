@@ -43,12 +43,12 @@ func Login(nameOrMail string, password string, userAgent string) (*types.Authent
 		return nil, InvalidMailAddressOrUsername
 	}
 
-	passwordHash, err := getUserPasswordHash(nameOrMail)
+	userInformation, err := getUserLoginInformation(nameOrMail)
 	if err != nil {
 		return nil, err
 	}
 
-	if err = compareHashAndPassword(passwordHash, password); err != nil {
+	if err = compareHashAndPassword(userInformation.PasswordHash, password); err != nil {
 		return nil, IncorrectPassword
 	}
 
@@ -57,23 +57,18 @@ func Login(nameOrMail string, password string, userAgent string) (*types.Authent
 		return nil, err
 	}
 
-	slice, err := database.QueryAsync(database.DefaultTimeout, types.AuthInformationType,
-		"SELECT users.id, users.username, session.session_key "+
-			"FROM "+
-			"users, "+
-			"(INSERT INTO user_sessions VALUES ($1, $2, $3, NOW()) RETURNING user_id, session_key) session "+
-			"WHERE users.id = session.user_id",
-		sessionKey, nameOrMail, userAgent)
+	err = database.PrepareAsync(database.DefaultTimeout,
+		"INSERT INTO user_sessions VALUES ($1, $2, $3, NOW())", userInformation.Id, sessionKey, userAgent)
+
 	if err != nil {
 		return nil, err
 	}
 
-	authInfos := slice.([]*types.AuthenticationInformation)
-	if len(authInfos) == 0 {
-		return nil, UserNotFound
-	}
-
-	return authInfos[0], err
+	return &types.AuthenticationInformation{
+		Id:         userInformation.Id,
+		Username:   userInformation.Username,
+		SessionKey: sessionKey,
+	}, nil
 }
 
 func Register(name string, mailAddress string, password string, firstName *string,
@@ -134,17 +129,17 @@ func getNewSessionKey() (string, error) {
 	return key, err
 }
 
-func getUserPasswordHash(nameOrMail string) (string, error) {
-	slice, err := database.QueryAsync(database.DefaultTimeout, types.PwHashInformationType,
-		"SELECT password FROM users WHERE mail = $1 OR username = $2", nameOrMail, nameOrMail)
+func getUserLoginInformation(nameOrMail string) (*types.UserLoginInformation, error) {
+	slice, err := database.QueryAsync(database.DefaultTimeout, types.UserLoginInformationType,
+		"SELECT id, username, password FROM users WHERE mail = $1 OR username = $2", nameOrMail, nameOrMail)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
-	passwords := slice.([]*types.PasswordHashInformation)
-	if len(passwords) == 0 {
-		return "", UserNotFound
+	information := slice.([]*types.UserLoginInformation)
+	if len(information) == 0 {
+		return nil, UserNotFound
 	}
 
-	return passwords[0].PasswordHash, nil
+	return information[0], nil
 }

@@ -72,12 +72,12 @@ func ChangeMailAddress(user *types.User, newMailAddress string) error {
 }
 
 func ChangePassword(user *types.User, oldPassword string, newPassword string) error {
-	passwordHash, err := getUserPasswordHash(user.Username)
+	userInformation, err := getUserLoginInformation(user.Username)
 	if err != nil {
 		return err
 	}
 
-	if err = compareHashAndPassword(passwordHash, oldPassword); err != nil {
+	if err = compareHashAndPassword(userInformation.PasswordHash, oldPassword); err != nil {
 		return IncorrectPassword
 	}
 
