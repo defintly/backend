@@ -55,7 +55,9 @@ func AddComment() gin.HandlerFunc {
 			return
 		}
 
-		allowCommentInternally(ctx, user.Id, commentId, false)
+		if !allowCommentInternally(ctx, user.Id, commentId, false) {
+			return
+		}
 
 		comment.Id = &commentId
 
@@ -109,17 +111,21 @@ func AllowComment() gin.HandlerFunc {
 	}
 }
 
-func allowCommentInternally(ctx *gin.Context, userId int, commentId int, finishRequest bool) {
+func allowCommentInternally(ctx *gin.Context, userId int, commentId int, finishRequest bool) (continueExecution bool) {
 	canAllowComments, err := users.HasPermission(userId, permissions.AllowComment)
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, errors.InternalError)
 		general.Log.Error("Failed to check user permission: ", err)
-		return
+		return false
 	}
 
 	if !canAllowComments {
-		ctx.AbortWithStatusJSON(http.StatusForbidden, errors.NoPermission)
-		return
+		if finishRequest {
+			ctx.AbortWithStatusJSON(http.StatusForbidden, errors.NoPermission)
+			return false
+		} else {
+			return true
+		}
 	}
 
 	if err := concepts.AllowComment(commentId); err != nil {
@@ -129,12 +135,14 @@ func allowCommentInternally(ctx *gin.Context, userId int, commentId int, finishR
 			ctx.AbortWithStatusJSON(http.StatusInternalServerError, errors.InternalError)
 			general.Log.Error("Failed to allow comment: ", err)
 		}
-		return
+		return false
 	}
 
 	if finishRequest {
 		ctx.JSON(http.StatusOK, gin.H{"id": commentId, "status": "allowed"})
 	}
+
+	return true
 }
 
 func deleteCommentInternally(ctx *gin.Context, commentId int) {
