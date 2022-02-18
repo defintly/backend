@@ -22,7 +22,7 @@ func GetUserByAuthenticationKey(key string) (*types.User, error) {
 	slice, err := database.QueryAsync(database.DefaultTimeout, types.UserType,
 		"SELECT users.id, users.username, users.mail, users.first_name, users.last_name "+
 			"FROM user_sessions, users "+
-			"WHERE user_sessions.session_key = $1 AND users.id = users_sessions.user_id",
+			"WHERE user_sessions.session_key = $1 AND users.id = user_sessions.user_id",
 		key)
 
 	if err != nil {

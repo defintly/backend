@@ -21,7 +21,7 @@ func HasPermission(userId int, permission string) (bool, error) {
 	slice, err := database.QueryAsync(database.DefaultTimeout, types.IdInformationType,
 		"SELECT user_role_mapping.user_id "+
 			"FROM user_role_mapping "+
-			"INNER JOIN roles ON user_role_mapping.role_id = roles.id"+
+			"INNER JOIN roles ON user_role_mapping.role_id = roles.id "+
 			"INNER JOIN role_permissions ON role_permissions.role_id = roles.id "+
 			"WHERE user_role_mapping.user_id = $1 AND (role_permissions.name = $2 OR role_permissions.name = $3)",
 		userId, permission, permissions.All)
