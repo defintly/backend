@@ -97,6 +97,10 @@ func Query(structType reflect.Type, query string, values ...interface{}) *QueryR
 		results := reflect.MakeSlice(reflect.SliceOf(structType), 0, 0).Interface().([]*types.IdInformation)
 		err := connection.Select(&results, query, values...)
 		return &QueryResult{results, err}
+	case "*types.Comment":
+		results := reflect.MakeSlice(reflect.SliceOf(structType), 0, 0).Interface().([]*types.Comment)
+		err := connection.Select(&results, query, values...)
+		return &QueryResult{results, err}
 	default:
 		return &QueryResult{nil, NoMatchingStruct}
 	}

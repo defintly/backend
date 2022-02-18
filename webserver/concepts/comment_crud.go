@@ -48,7 +48,7 @@ func AddComment() gin.HandlerFunc {
 			return
 		}
 
-		commentId, err := concepts.AddComment(id, user.Id, comment.Text, comment.ParentCommentId)
+		commentId, err := concepts.AddComment(id, user.Id, comment.Text, comment.ParentId)
 		if err != nil {
 			ctx.AbortWithStatusJSON(http.StatusInternalServerError, errors.InternalError)
 			general.Log.Error("Failed to add comment: ", err)
