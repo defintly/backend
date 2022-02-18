@@ -20,7 +20,7 @@ func Run(hostname string, port int) {
 	router.Use(ginlogrus.Logger(general.Log), gin.Recovery())
 
 	router.GET("/", func(ctx *gin.Context) {
-		ctx.JSON(http.StatusOK, gin.H{"name": "defintly API", "version": "2.1.0"})
+		ctx.JSON(http.StatusOK, gin.H{"name": "defintly API", "version": "2.1.1"})
 	})
 
 	authHandler := handler.AuthenticationHandler()
@@ -71,9 +71,9 @@ func initConceptRoutes(router *gin.Engine, authHandler gin.HandlerFunc) {
 	conceptCommentGroup.GET("/list-unreviewed", authHandler, concepts.ListUnreviewedComments())
 
 	conceptCommentIdGroup := conceptCommentGroup.Group("/:id", handler.Id())
-	conceptCommentIdGroup.DELETE("/", concepts.DeleteComment())
+	conceptCommentIdGroup.DELETE("/", authHandler, concepts.DeleteComment())
+	conceptCommentIdGroup.PUT("/allow", authHandler, concepts.AllowComment())
 	conceptCommentIdGroup.GET("/children", concepts.GetCommentList())
-	conceptCommentIdGroup.PUT("/allow", concepts.AllowComment())
 }
 
 func initCriteriaRoutes(router *gin.Engine) {
