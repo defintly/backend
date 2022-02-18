@@ -12,7 +12,7 @@ const authKeyHeader = "X-Auth-Key"
 
 func AuthenticationHandler() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		authKey := ctx.Request.URL.Query().Get("token")
+		authKey := ctx.Request.Header.Get(authKeyHeader)
 
 		if authKey == "" {
 			ctx.AbortWithStatusJSON(http.StatusUnauthorized, errors.MissingAuthenticationInformation)
