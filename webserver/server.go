@@ -9,6 +9,7 @@ import (
 	"github.com/defintly/backend/webserver/concepts"
 	"github.com/defintly/backend/webserver/criteria"
 	"github.com/defintly/backend/webserver/handler"
+	"github.com/defintly/backend/webserver/helper"
 	"github.com/defintly/backend/webserver/users"
 	"github.com/gin-gonic/gin"
 	"github.com/toorop/gin-logrus"
@@ -97,12 +98,12 @@ func initAuthRoutes(router *gin.Engine, authHandler gin.HandlerFunc) {
 }
 
 func initUserRoutes(router *gin.Engine, authHandler gin.HandlerFunc) {
-	usersGroup := router.Group("/users", authHandler)
+	usersGroup := router.Group("/users")
 
-	usersIdGroup := usersGroup.Group("/:userId", handler.UserIdWithMeHandler())
+	usersIdGroup := usersGroup.Group("/:userId", helper.UserIdWithMeHandler())
 
 	usersIdGroup.GET("", users.Get())
-	usersIdGroup.PUT("/username", users.ChangeUsername())
-	usersIdGroup.PUT("/firstname", users.ChangeFirstname())
-	usersIdGroup.PUT("/lastname", users.ChangeLastname())
+	usersIdGroup.PUT("/username", authHandler, users.ChangeUsername())
+	usersIdGroup.PUT("/firstname", authHandler, users.ChangeFirstname())
+	usersIdGroup.PUT("/lastname", authHandler, users.ChangeLastname())
 }

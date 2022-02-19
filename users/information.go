@@ -90,9 +90,14 @@ func ChangePassword(user *types.User, oldPassword string, newPassword string) er
 		newPasswordHash, user.Id)
 }
 
-func GetUserById(id int) (*types.User, error) {
-	slice, err := database.QueryAsync(database.DefaultTimeout, types.UserType,
-		"SELECT id, username, mail, first_name, profile_image, disabilities FROM users WHERE id = $1", id)
+func GetUserById(showMail bool, id int) (*types.User, error) {
+	query := "SELECT id, username, first_name, last_name"
+	if showMail {
+		query += ", mail"
+	}
+	query += " FROM users WHERE id = $1"
+
+	slice, err := database.QueryAsync(database.DefaultTimeout, types.UserType, query, id)
 
 	if err != nil {
 		return nil, err

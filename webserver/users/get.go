@@ -11,15 +11,18 @@ import (
 
 func Get() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		user := ctx.MustGet("user").(*types.User)
 		id := ctx.MustGet("userId").(int)
-
-		if id == user.Id {
-			ctx.JSON(http.StatusOK, user)
+		if id == -1 {
 			return
 		}
+		showMail := false
 
-		requestedUser, err := users.GetUserById(id)
+		user, ok := ctx.Get("user")
+		if ok && user.(*types.User).Id == id {
+			showMail = true
+		}
+
+		requestedUser, err := users.GetUserById(showMail, id)
 
 		if err != nil {
 			if err == users.UserNotFound {
@@ -31,7 +34,6 @@ func Get() gin.HandlerFunc {
 			return
 		}
 
-		requestedUser.MailAddress = nil
 		ctx.JSON(http.StatusOK, requestedUser)
 	}
 }
