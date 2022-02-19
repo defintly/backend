@@ -48,8 +48,8 @@ func Search(search string) ([]*types.Concept, error) {
 
 func AddComment(conceptId int, userId int, text string, parentCommentId *int) (int, error) {
 	slice, err := database.QueryAsync(database.DefaultTimeout, types.IdInformationType,
-		"INSERT INTO concept_comments(concept_id, user_id, text, parent_id, allowed) VALUES($1, $2, $3, $4, $5) "+
-			"RETURNING id", conceptId, userId, text, parentCommentId, false)
+		"INSERT INTO concept_comments(concept_id, user_id, text, parent_id, creation_time, allowed) "+
+			"VALUES($1, $2, $3, $4, NOW(), $5) RETURNING id", conceptId, userId, text, parentCommentId, false)
 
 	if err != nil {
 		return -1, err

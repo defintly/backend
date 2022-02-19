@@ -52,6 +52,7 @@ func initDDL() {
 		"user_id BIGINT NOT NULL," +
 		"text TEXT NOT NULL," +
 		"parent_id BIGINT," +
+		"creation_time TIMESTAMP NOT NULL," +
 		"allowed BOOLEAN NOT NULL" +
 		")")
 	database.MustExec("CREATE TABLE IF NOT EXISTS users(" +
