@@ -39,7 +39,7 @@ func ChangeFirstName(user *types.User, newFirstName string) error {
 }
 
 func ChangeLastName(user *types.User, newLastName string) error {
-	err := database.PrepareAsync(database.DefaultTimeout, "UPDATE users SET profile_image = $1 WHERE id = $2",
+	err := database.PrepareAsync(database.DefaultTimeout, "UPDATE users SET last_name = $1 WHERE id = $2",
 		newLastName, user.Id)
 	if err != nil {
 		return err
