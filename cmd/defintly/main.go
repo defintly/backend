@@ -67,7 +67,7 @@ func initDDL() {
 		"user_id BIGINT NOT NULL," +
 		"session_key VARCHAR(36) NOT NULL," +
 		"user_agent TEXT NOT NULL," +
-		"creation_date DATE NOT NULL" +
+		"creation_time TIMESTAMP NOT NULL" +
 		")")
 	database.MustExec("CREATE TABLE IF NOT EXISTS roles(" +
 		"id BIGSERIAL PRIMARY KEY," +
